@@ -1,0 +1,20 @@
+name: "MultiLabel"
+layer {
+  name: "multilabel"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  data_param {
+    source: "examples/multi_label/multi_label_train_lmdb"
+    batch_size: 6
+    backend: LMDB
+  }
+}
+layer {
+  name: "dummy"
+  type: "Dummy"
+  bottom: "data"
+}

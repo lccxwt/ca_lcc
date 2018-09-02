@@ -1,0 +1,6 @@
+airplane32.jpg 1.0 2.0 1
+cat32.jpg 2.4 3.2 0
+deer32.jpg 3.3 2.2 1
+dog32.jpg 2.4 2.5 0
+horse32.jpg 2.7 4.5 0
+ship32.jpg 3.5 3.1 0

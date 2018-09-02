@@ -91,12 +91,17 @@ inline void WriteProtoToBinaryFile(
 }
 
 bool ReadFileToDatum(const string& filename, const int label, Datum* datum);
+bool ReadFileToDatumMultiLabel(const string& filename, const std::vector<float> label, Datum* datum);
 
 inline bool ReadFileToDatum(const string& filename, Datum* datum) {
   return ReadFileToDatum(filename, -1, datum);
 }
 
 bool ReadImageToDatum(const string& filename, const int label,
+    const int height, const int width, const bool is_color,
+    const std::string & encoding, Datum* datum);
+
+bool ReadImageToDatumMultiLabel(const string& filename, const std::vector<float> label,
     const int height, const int width, const bool is_color,
     const std::string & encoding, Datum* datum);
 

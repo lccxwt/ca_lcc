@@ -115,6 +115,37 @@ static bool matchExt(const std::string & fn,
     return true;
   return false;
 }
+//lcc:
+bool ReadImageToDatumMultiLabel(const string& filename, const std::vector<float> label,
+    const int height, const int width, const bool is_color,
+    const std::string & encoding, Datum* datum) {
+  cv::Mat cv_img = ReadImageToCVMat(filename, height, width, is_color);
+  if (cv_img.data) {
+    if (encoding.size()) {
+      if ( (cv_img.channels() == 3) == is_color && !height && !width &&
+          matchExt(filename, encoding) )
+        return ReadFileToDatumMultiLabel(filename, label, datum);
+      std::vector<uchar> buf;
+      cv::imencode("."+encoding, cv_img, buf);
+      datum->set_data(std::string(reinterpret_cast<char*>(&buf[0]),
+                      buf.size()));
+      datum->mutable_labels()->Clear();
+      for (int i = 0; i < label.size(); ++i) {
+        datum->add_labels(label[i]);
+      }
+      datum->set_encoded(true);
+      return true;
+    }
+    CVMatToDatum(cv_img, datum);
+    datum->mutable_labels()->Clear();
+    for (int i = 0; i < label.size(); ++i) {
+      datum->add_labels(label[i]);
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
 
 bool ReadImageToDatum(const string& filename, const int label,
     const int height, const int width, const bool is_color,
@@ -141,6 +172,29 @@ bool ReadImageToDatum(const string& filename, const int label,
   }
 }
 #endif  // USE_OPENCV
+//lcc:
+bool ReadFileToDatumMultiLabel(const string& filename, const std::vector<float> label,
+    Datum* datum) {
+  std::streampos size;
+
+  fstream file(filename.c_str(), ios::in|ios::binary|ios::ate);
+  if (file.is_open()) {
+    size = file.tellg();
+    std::string buffer(size, ' ');
+    file.seekg(0, ios::beg);
+    file.read(&buffer[0], size);
+    file.close();
+    datum->set_data(buffer);
+    datum->mutable_labels()->Clear();
+    for (int i = 0; i < label.size(); ++i) {
+      datum->add_labels(label[i]);
+    }
+    datum->set_encoded(true);
+    return true;
+  } else {
+    return false;
+  }
+}
 
 bool ReadFileToDatum(const string& filename, const int label,
     Datum* datum) {
